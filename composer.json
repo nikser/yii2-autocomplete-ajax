@@ -1,8 +1,8 @@
 {
-	"name": "keygenqt/yii2-autocomplete-ajax",
-	"description": "A simple way to search model id of the attributes model.",
+	"name": "teliasorg/yii2-autocomplete-ajax",
+	"description": "A simple way to search model id of the attributes model. Fork from keygenqt/yii2-autocomplete-ajax",
 	"keywords": ["yii2", "extension", "widget", "autocomplete", "ajax", "jquery", "plugin"],
-	"homepage": "https://github.com/keygenqt/yii2-autocomplete-ajax",
+	"homepage": "https://github.com/thiagoeliasr/yii2-autocomplete-ajax",
 	"type": "yii2-extension",
 	"license": "BSD-3-Clause",
 	"version":"0.5.0",
@@ -12,6 +12,12 @@
 			"email": "keygenqt@gmail.com",
 			"homepage": "http://keygenqt.ru/",
 			"role": "Developer"
+		},
+		{
+			"name": "Thiago Elias",
+			"email": "thiago@thiagoelias.org",
+			"homepage": "http://thiagoelias.org",
+			"role": "Developer"
 		}
 	],
 	"require": {
@@ -20,7 +26,7 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"keygenqt\\autocompleteAjax\\": ""
+			"teliasorg\\autocompleteAjax\\": ""
 		}
 	}
 }
