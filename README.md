@@ -11,7 +11,7 @@ Either add
 
 ```
 "require": {
-    "keygenqt/yii2-autocomplete-ajax": "*"
+    "teliasorg/yii2-autocomplete-ajax": "*"
 }
 ```
 
@@ -19,14 +19,14 @@ of your `composer.json` file.
 
 ## Latest Release
 
-The latest version of the module is v0.5.0 `BETA`.
+The latest version of the module is v0.5.1 `BETA`.
 
 ## Usage
 
 View:
 
 ```php
-use keygenqt\autocompleteAjax\AutocompleteAjax;
+use teliasorg\autocompleteAjax\AutocompleteAjax;
 
 // Normal select with ActiveForm & model
 <?= $form->field($model, 'user_id')->widget(AutocompleteAjax::classname(), [
@@ -50,7 +50,7 @@ class AjaxController extends Controller
             if (is_numeric($term)) {
                 /** @var Tag $model */
                 $model = Tag::findOne(['id' => $term]);
-                
+
                 if ($model) {
                     $results[] = [
                         'id' => $model['id'],

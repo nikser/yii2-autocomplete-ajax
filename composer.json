@@ -5,7 +5,7 @@
 	"homepage": "https://github.com/thiagoeliasr/yii2-autocomplete-ajax",
 	"type": "yii2-extension",
 	"license": "BSD-3-Clause",
-	"version":"0.5.0",
+	"version":"0.5.1",
 	"authors": [
 		{
 			"name": "Vitaliy Zarubin",

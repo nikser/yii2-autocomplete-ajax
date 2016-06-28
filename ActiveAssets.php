@@ -1,15 +1,16 @@
 <?php
 
-namespace keygenqt\autocompleteAjax;
+namespace teliasorg\autocompleteAjax;
 
 use \yii\web\AssetBundle;
 
 /**
  * @author KeyGen <keygenqt@gmail.com>
+ * @author Thiago Elias <thiago@thiagoelias.org>
  */
 class ActiveAssets extends AssetBundle
 {
-	public $sourcePath = '@keygenqt/autocompleteAjax/assets';
+	public $sourcePath = '@teliasorg/autocompleteAjax/assets';
 
 	public $js = [
 		'js/jquery-ui-1.9.2.custom.min.js',

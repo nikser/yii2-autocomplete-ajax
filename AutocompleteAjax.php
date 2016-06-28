@@ -1,6 +1,6 @@
 <?php
 
-namespace keygenqt\autocompleteAjax;
+namespace teliasorg\autocompleteAjax;
 
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -36,18 +36,24 @@ class AutocompleteAjax extends InputWidget
         $value = $this->model->{$this->attribute};
         $this->registerActiveAssets();
 
+        $onChangeJs = '';
+
+        if (isset($this->options['onChange'])) {
+            $onChangeJs = $this->options['onChange'];
+        }
+
         if ($this->multiple) {
-            
+
             $this->getView()->registerJs("
-                
+
                 $('#{$this->getId()}').keyup(function(event) {
                     if (event.keyCode == 8 && !$('#{$this->getId()}').val().length) {
-                        
+
                         $('#{$this->getId()}-hidden').val('');
-                            
-                    } else if ($('.ui-autocomplete').css('display') == 'none' && 
+
+                    } else if ($('.ui-autocomplete').css('display') == 'none' &&
                         $('#{$this->getId()}-hidden').val().split(', ').length > $(this).val().split(', ').length) {
-                            
+
                         var val = $('#{$this->getId()}').val().split(', ');
                         var ids = [];
                         for (var i = 0; i<val.length; i++) {
@@ -57,20 +63,20 @@ class AutocompleteAjax extends InputWidget
                         $('#{$this->getId()}-hidden').val(ids.join(', '));
                     }
                 });
-                
+
                 $('#{$this->getId()}').keydown(function(event) {
-                    
+
                     if (event.keyCode == 13 && $('.ui-autocomplete').css('display') == 'none') {
                         submit_{$this->getId()} = $('#{$this->getId()}').closest('.grid-view');
                         $('#{$this->getId()}').closest('.grid-view').yiiGridView('applyFilter');
                     }
-                    
+
                     if (event.keyCode == 13) {
                         $('.ui-autocomplete').hide();
                     }
-                    
+
                 });
-                
+
                 $('body').on('beforeFilter', '#' + $('#{$this->getId()}').closest('.grid-view').attr('id') , function(event) {
                     return submit_{$this->getId()};
                 });
@@ -92,7 +98,7 @@ class AutocompleteAjax extends InputWidget
                         }
                         $.getJSON('{$this->getUrl()}', request, function( data, status, xhr ) {
                             cache_{$this->getId()} [term] = data;
-                                
+
                             for (var i = 0; i<data.length; i++) {
                                 if (!(data[i].id in cache_{$this->getId()}_2)) {
                                     cache_{$this->getId()}_1[data[i].label] = data[i].id;
@@ -123,6 +129,8 @@ class AutocompleteAjax extends InputWidget
                         setTimeout(function() {
                             $('#{$this->getId()}').val(names.join(', '));
                         }, 0);
+
+                        {$onChangeJs}
                     }
                 });
             ");
@@ -149,11 +157,12 @@ class AutocompleteAjax extends InputWidget
                     select: function(event, ui)
                     {
                         $('#{$this->getId()}-hidden').val(ui.item.id);
+                        {$onChangeJs}
                     }
                 });
             ");
         }
-        
+
         if ($value) {
             $this->getView()->registerJs("
                 $(function(){
@@ -183,13 +192,13 @@ class AutocompleteAjax extends InputWidget
                 });
             ");
         }
-        
-        return Html::tag('div', 
-                
+
+        return Html::tag('div',
+
             Html::activeHiddenInput($this->model, $this->attribute, ['id' => $this->getId() . '-hidden', 'class' => 'form-control'])
             . ($value ? Html::tag('div', "<img src='{$this->registerActiveAssets()}/images/load.gif'/>", ['class' => 'autocomplete-image-load']) : '')
             . Html::textInput('', '', array_merge($this->options, ['id' => $this->getId(), 'class' => 'form-control']))
-              
+
             , [
                 'style' => 'position: relative;'
             ]

@@ -1,4 +1,5 @@
 Copyright (c) 2014 - 2016, Vitaliy Zarubin
+Fork/changes: 2016, Thiago Elias
 
 http://keygenqt.ru/
 
