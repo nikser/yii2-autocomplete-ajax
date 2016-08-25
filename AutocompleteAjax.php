@@ -11,6 +11,9 @@ class AutocompleteAjax extends InputWidget
     public $multiple = false;
     public $url = [];
     public $options = [];
+    public $class = '';
+    public $id = null;
+    public $varName = null;
 
     private $_baseUrl;
     private $_ajaxUrl;
@@ -42,33 +45,46 @@ class AutocompleteAjax extends InputWidget
             $onChangeJs = $this->options['onChange'];
         }
 
+        if ($this->options['class']) {
+            $this->class = $this->options['class'];
+        } else {
+            $this->class = 'form-control';
+        }
+
+        if ($this->options['id']) {
+            $this->id = $this->options['id'];
+            $this->varName = str_replace('-', '_', $this->options['id']);
+        } else {
+            $this->id = $this->varName = $this->getId();
+        }
+
         if ($this->multiple) {
 
             $this->getView()->registerJs("
 
                 $('#{$this->getId()}').keyup(function(event) {
-                    if (event.keyCode == 8 && !$('#{$this->getId()}').val().length) {
+                    if (event.keyCode == 8 && !$('#{$this->id}').val().length) {
 
-                        $('#{$this->getId()}-hidden').val('');
+                        $('#{$this->id}-hidden').val('');
 
                     } else if ($('.ui-autocomplete').css('display') == 'none' &&
-                        $('#{$this->getId()}-hidden').val().split(', ').length > $(this).val().split(', ').length) {
+                        $('#{$this->id}-hidden').val().split(', ').length > $(this).val().split(', ').length) {
 
-                        var val = $('#{$this->getId()}').val().split(', ');
+                        var val = $('#{$this->id}').val().split(', ');
                         var ids = [];
                         for (var i = 0; i<val.length; i++) {
                             val[i] = val[i].replace(',', '').trim();
-                            ids[i] = cache_{$this->getId()}_1[val[i]];
+                            ids[i] = cache_{$this->id}_1[val[i]];
                         }
-                        $('#{$this->getId()}-hidden').val(ids.join(', '));
+                        $('#{$this->id}-hidden').val(ids.join(', '));
                     }
                 });
 
-                $('#{$this->getId()}').keydown(function(event) {
+                $('#{$this->id}').keydown(function(event) {
 
                     if (event.keyCode == 13 && $('.ui-autocomplete').css('display') == 'none') {
-                        submit_{$this->getId()} = $('#{$this->getId()}').closest('.grid-view');
-                        $('#{$this->getId()}').closest('.grid-view').yiiGridView('applyFilter');
+                        submit_{$this->varName} = $('#{$this->id}').closest('.grid-view');
+                        $('#{$this->id}').closest('.grid-view').yiiGridView('applyFilter');
                     }
 
                     if (event.keyCode == 13) {
@@ -77,32 +93,32 @@ class AutocompleteAjax extends InputWidget
 
                 });
 
-                $('body').on('beforeFilter', '#' + $('#{$this->getId()}').closest('.grid-view').attr('id') , function(event) {
-                    return submit_{$this->getId()};
+                $('body').on('beforeFilter', '#' + $('#{$this->id}').closest('.grid-view').attr('id') , function(event) {
+                    return submit_{$this->varName};
                 });
 
-                var submit_{$this->getId()} = false;
-                var cache_{$this->getId()} = {};
-                var cache_{$this->getId()}_1 = {};
-                var cache_{$this->getId()}_2 = {};
-                jQuery('#{$this->getId()}').autocomplete(
+                var submit_{$this->varName} = false;
+                var cache_{$this->varName} = {};
+                var cache_{$this->varName}_1 = {};
+                var cache_{$this->varName}_2 = {};
+                jQuery('#{$this->id}').autocomplete(
                 {
                     minLength: 1,
                     source: function( request, response )
                     {
                         var term = request.term;
 
-                        if (term in cache_{$this->getId()}) {
-                            response( cache_{$this->getId()}[term]);
+                        if (term in cache_{$this->varName}) {
+                            response( cache_{$this->varName}[term]);
                             return;
                         }
                         $.getJSON('{$this->getUrl()}', request, function( data, status, xhr ) {
-                            cache_{$this->getId()} [term] = data;
+                            cache_{$this->varName} [term] = data;
 
                             for (var i = 0; i<data.length; i++) {
-                                if (!(data[i].id in cache_{$this->getId()}_2)) {
-                                    cache_{$this->getId()}_1[data[i].label] = data[i].id;
-                                    cache_{$this->getId()}_2[data[i].id] = data[i].label;
+                                if (!(data[i].id in cache_{$this->varName}_2)) {
+                                    cache_{$this->varName}_1[data[i].label] = data[i].id;
+                                    cache_{$this->varName}_2[data[i].id] = data[i].label;
                                 }
                             }
 
@@ -111,7 +127,7 @@ class AutocompleteAjax extends InputWidget
                     },
                     select: function(event, ui)
                     {
-                        var val = $('#{$this->getId()}-hidden').val().split(', ');
+                        var val = $('#{$this->id}-hidden').val().split(', ');
 
                         if (val[0] == '') {
                             val[0] = ui.item.id;
@@ -119,15 +135,15 @@ class AutocompleteAjax extends InputWidget
                             val[val.length] = ui.item.id;
                         }
 
-                        $('#{$this->getId()}-hidden').val(val.join(', '));
+                        $('#{$this->id}-hidden').val(val.join(', '));
 
                         var names = [];
                         for (var i = 0; i<val.length; i++) {
-                            names[i] = cache_{$this->getId()}_2[val[i]];
+                            names[i] = cache_{$this->varName}_2[val[i]];
                         }
 
                         setTimeout(function() {
-                            $('#{$this->getId()}').val(names.join(', '));
+                            $('#{$this->id}').val(names.join(', '));
                         }, 0);
 
                         {$onChangeJs}
@@ -136,27 +152,27 @@ class AutocompleteAjax extends InputWidget
             ");
         } else {
             $this->getView()->registerJs("
-                var cache_{$this->getId()} = {};
-                var cache_{$this->getId()}_1 = {};
-                var cache_{$this->getId()}_2 = {};
-                jQuery('#{$this->getId()}').autocomplete(
+                var cache_{$this->varName} = {};
+                var cache_{$this->varName}_1 = {};
+                var cache_{$this->varName}_2 = {};
+                jQuery('#{$this->id}').autocomplete(
                 {
                     minLength: 1,
                     source: function( request, response )
                     {
                         var term = request.term;
-                        if ( term in cache_{$this->getId()} ) {
-                            response( cache_{$this->getId()} [term] );
+                        if ( term in cache_{$this->varName} ) {
+                            response( cache_{$this->varName} [term] );
                             return;
                         }
                         $.getJSON('{$this->getUrl()}', request, function( data, status, xhr ) {
-                            cache_{$this->getId()} [term] = data;
+                            cache_{$this->varName} [term] = data;
                             response(data);
                         });
                     },
                     select: function(event, ui)
                     {
-                        $('#{$this->getId()}-hidden').val(ui.item.id);
+                        $('#{$this->id}-hidden').val(ui.item.id);
                         {$onChangeJs}
                     }
                 });
@@ -174,17 +190,17 @@ class AutocompleteAjax extends InputWidget
                         success: function(data) {
 
                             if (data.length == 0) {
-                                $('#{$this->getId()}').attr('placeholder', 'User not found !!!');
+                                $('#{$this->id}').attr('placeholder', 'User not found !!!');
                             } else {
                                 var arr = [];
                                 for (var i = 0; i<data.length; i++) {
                                     arr[i] = data[i].label;
-                                    if (!(data[i].id in cache_{$this->getId()}_2)) {
-                                        cache_{$this->getId()}_1[data[i].label] = data[i].id;
-                                        cache_{$this->getId()}_2[data[i].id] = data[i].label;
+                                    if (!(data[i].id in cache_{$this->varName}_2)) {
+                                        cache_{$this->varName}_1[data[i].label] = data[i].id;
+                                        cache_{$this->varName}_2[data[i].id] = data[i].label;
                                     }
                                 }
-                                $('#{$this->getId()}').val(arr.join(', '));
+                                $('#{$this->id}').val(arr.join(', '));
                             }
                             $('.autocomplete-image-load').hide();
                         }
@@ -195,9 +211,9 @@ class AutocompleteAjax extends InputWidget
 
         return Html::tag('div',
 
-            Html::activeHiddenInput($this->model, $this->attribute, ['id' => $this->getId() . '-hidden', 'class' => 'form-control'])
+            Html::activeHiddenInput($this->model, $this->attribute, ['id' => $this->id . '-hidden', 'class' => $this->class])
             . ($value ? Html::tag('div', "<img src='{$this->registerActiveAssets()}/images/load.gif'/>", ['class' => 'autocomplete-image-load']) : '')
-            . Html::textInput('', '', array_merge($this->options, ['id' => $this->getId(), 'class' => 'form-control']))
+            . Html::textInput('', '', array_merge($this->options, ['id' => $this->id, 'class' => $this->class]))
 
             , [
                 'style' => 'position: relative;'
