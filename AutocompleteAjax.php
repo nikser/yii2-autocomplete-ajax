@@ -45,7 +45,7 @@ class AutocompleteAjax extends InputWidget
             $onChangeJs = $this->options['onChange'];
         }
 
-        if ($this->options['class']) {
+        if (isset($this->options['class'])) {
             $this->class = $this->options['class'];
         } else {
             $this->class = 'form-control';
