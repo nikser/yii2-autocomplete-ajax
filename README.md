@@ -11,7 +11,7 @@ Either add
 
 ```
 "require": {
-    "teliasorg/yii2-autocomplete-ajax": "*"
+    "nikser/yii2-autocomplete-ajax": "*"
 }
 ```
 
@@ -19,14 +19,14 @@ of your `composer.json` file.
 
 ## Latest Release
 
-The latest version of the module is v0.5.1 `BETA`.
+The latest version of the module is v0.6.1 `BETA`.
 
 ## Usage
 
 View:
 
 ```php
-use teliasorg\autocompleteAjax\AutocompleteAjax;
+use nikser\autocompleteAjax\AutocompleteAjax;
 
 // Normal select with ActiveForm & model
 <?= $form->field($model, 'user_id')->widget(AutocompleteAjax::classname(), [

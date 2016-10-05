@@ -1,6 +1,6 @@
 <?php
 
-namespace teliasorg\autocompleteAjax;
+namespace nikser\autocompleteAjax;
 
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -12,8 +12,10 @@ class AutocompleteAjax extends InputWidget
     public $url = [];
     public $options = [];
     public $class = '';
-    public $id = null;
-    public $varName = null;
+    public $id;
+    public $labelValue;
+    public $varName;
+    public $dependsId;
 
     private $_baseUrl;
     private $_ajaxUrl;
@@ -36,20 +38,11 @@ class AutocompleteAjax extends InputWidget
 
     public function run()
     {
-        $value = $this->model->{$this->attribute};
+        $value = $this->model ? $this->model->{$this->attribute} : $this->value;
         $this->registerActiveAssets();
 
-        $onChangeJs = '';
-
-        if (isset($this->options['onChange'])) {
-            $onChangeJs = $this->options['onChange'];
-        }
-
-        if (isset($this->options['class'])) {
-            $this->class = $this->options['class'];
-        } else {
-            $this->class = 'form-control';
-        }
+        $onChangeJs = isset($this->options['data-on-change']) ? $this->options['data-on-change'] . ';' : '';
+        $this->class = isset($this->options['class']) ? $this->options['class'] : 'form-control';
 
         if ($this->options['id']) {
             $this->id = $this->options['id'];
@@ -155,9 +148,10 @@ class AutocompleteAjax extends InputWidget
                 var cache_{$this->varName} = {};
                 var cache_{$this->varName}_1 = {};
                 var cache_{$this->varName}_2 = {};
+
                 jQuery('#{$this->id}').autocomplete(
                 {
-                    minLength: 1,
+                    minLength: 0,
                     source: function( request, response )
                     {
                         var term = request.term;
@@ -165,55 +159,82 @@ class AutocompleteAjax extends InputWidget
                             response( cache_{$this->varName} [term] );
                             return;
                         }
-                        $.getJSON('{$this->getUrl()}', request, function( data, status, xhr ) {
-                            cache_{$this->varName} [term] = data;
-                            response(data);
+                        $.ajax({
+                            dataType: 'json',
+                            url:'{$this->getUrl()}',
+                            data: request,
+                            success: function( data, status, xhr )
+                            {
+                                cache_{$this->varName}[term] = data;
+                                response(data);
+                            },
+                            beforeSend: function() {
+                                $('.autocomplete-image-load').show();
+                            },
+                            complete: function(xhr, status) {
+                                $('.autocomplete-image-load').hide();
+                            }
                         });
                     },
                     select: function(event, ui)
                     {
-                        $('#{$this->id}-hidden').val(ui.item.id);
+                        var element = $('#{$this->id}-hidden');
+                        element.val(ui.item.id);
                         {$onChangeJs}
+                    }
+                }).bind('focus', function(){
+                    var val = $('#{$this->id}-hidden').val();
+                    if (val) {
+                        jQuery(this).autocomplete('search', val);
+                    } else {
+                        jQuery(this).autocomplete('search', $('[name=\"{$this->dependsId}\"]').val());
                     }
                 });
             ");
         }
 
-        if ($value) {
-            $this->getView()->registerJs("
-                $(function(){
-                    $.ajax({
-                        type: 'GET',
-                        dataType: 'json',
-                        url: '{$this->getUrl()}',
-                        data: {term: '$value'},
-                        success: function(data) {
+//        if ($value) {
+//            $this->getView()->registerJs("
+//                $(function(){
+//                    $.ajax({
+//                        type: 'GET',
+//                        dataType: 'json',
+//                        url: '{$this->getUrl()}',
+//                        data: {term: '$value'},
+//                        success: function(data) {
+//
+//                            if (data.length == 0) {
+//                                $('#{$this->id}').attr('placeholder', 'User not found !!!');
+//                            } else {
+//                                var arr = [];
+//                                for (var i = 0; i<data.length; i++) {
+//                                    arr[i] = data[i].label;
+//                                    if (!(data[i].id in cache_{$this->varName}_2)) {
+//                                        cache_{$this->varName}_1[data[i].label] = data[i].id;
+//                                        cache_{$this->varName}_2[data[i].id] = data[i].label;
+//                                    }
+//                                }
+//                                $('#{$this->id}').val(arr.join(', '));
+//                            }
+//                            $('.autocomplete-image-load').hide();
+//                        }
+//                    });
+//                });
+//            ");
+//        }
 
-                            if (data.length == 0) {
-                                $('#{$this->id}').attr('placeholder', 'User not found !!!');
-                            } else {
-                                var arr = [];
-                                for (var i = 0; i<data.length; i++) {
-                                    arr[i] = data[i].label;
-                                    if (!(data[i].id in cache_{$this->varName}_2)) {
-                                        cache_{$this->varName}_1[data[i].label] = data[i].id;
-                                        cache_{$this->varName}_2[data[i].id] = data[i].label;
-                                    }
-                                }
-                                $('#{$this->id}').val(arr.join(', '));
-                            }
-                            $('.autocomplete-image-load').hide();
-                        }
-                    });
-                });
-            ");
+        if ($this->model) {
+            $hiddenField = Html::activeHiddenInput($this->model, $this->attribute, ['id' => $this->id . '-hidden', 'class' => $this->class]);
+        } else {
+            $hiddenField = Html::hiddenInput($this->name, $value, ['id' => $this->id . '-hidden', 'class' => $this->class]);
         }
 
-        return Html::tag('div',
-
-            Html::activeHiddenInput($this->model, $this->attribute, ['id' => $this->id . '-hidden', 'class' => $this->class])
-            . ($value ? Html::tag('div', "<img src='{$this->registerActiveAssets()}/images/load.gif'/>", ['class' => 'autocomplete-image-load']) : '')
-            . Html::textInput('', '', array_merge($this->options, ['id' => $this->id, 'class' => $this->class]))
+        return Html::tag('div', $hiddenField
+            . Html::tag('div', "<img src='{$this->registerActiveAssets()}/images/load.gif'/>", [
+                'class' => 'autocomplete-image-load',
+                'style' => 'display: none',
+            ])
+            . Html::textInput('', $this->labelValue, array_merge($this->options, ['id' => $this->id, 'class' => $this->class]))
 
             , [
                 'style' => 'position: relative;'

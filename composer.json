@@ -1,32 +1,45 @@
 {
-	"name": "teliasorg/yii2-autocomplete-ajax",
-	"description": "A simple way to search model id of the attributes model. Fork from keygenqt/yii2-autocomplete-ajax",
-	"keywords": ["yii2", "extension", "widget", "autocomplete", "ajax", "jquery", "plugin"],
-	"homepage": "https://github.com/thiagoeliasr/yii2-autocomplete-ajax",
-	"type": "yii2-extension",
-	"license": "BSD-3-Clause",
-	"version":"0.5.2",
-	"authors": [
-		{
-			"name": "Vitaliy Zarubin",
-			"email": "keygenqt@gmail.com",
-			"homepage": "http://keygenqt.ru/",
-			"role": "Developer"
-		},
-		{
-			"name": "Thiago Elias",
-			"email": "thiago@thiagoelias.org",
-			"homepage": "http://thiagoelias.org",
-			"role": "Developer"
-		}
-	],
-	"require": {
-		"yiisoft/yii2": "*",
-		"php": ">=5.4.0"
-	},
-	"autoload": {
-		"psr-4": {
-			"teliasorg\\autocompleteAjax\\": ""
-		}
-	}
+    "name": "nikser/yii2-autocomplete-ajax",
+    "description": "A simple way to search model id of the attributes model. Fork from nikser/yii2-autocomplete-ajax",
+    "keywords": [
+        "yii2",
+        "extension",
+        "widget",
+        "autocomplete",
+        "ajax",
+        "jquery",
+        "plugin"
+    ],
+    "homepage": "https://github.com/nikser/yii2-autocomplete-ajax",
+    "type": "yii2-extension",
+    "license": "BSD-3-Clause",
+    "version": "0.5.2",
+    "authors": [
+        {
+            "name": "Nikolay Efimov",
+            "email": "ef.nik.ser@gmail.com",
+            "role": "Developer"
+        },
+        {
+            "name": "Vitaliy Zarubin",
+            "email": "keygenqt@gmail.com",
+            "homepage": "http://keygenqt.ru/",
+            "role": "Developer"
+        },
+        {
+            "name": "Thiago Elias",
+            "email": "thiago@thiagoelias.org",
+            "homepage": "http://thiagoelias.org",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": "*",
+        "php": ">=5.4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "nikser\\autocompleteAjax\\": ""
+        }
+    }
 }

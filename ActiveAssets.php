@@ -1,6 +1,6 @@
 <?php
 
-namespace teliasorg\autocompleteAjax;
+namespace nikser\autocompleteAjax;
 
 use \yii\web\AssetBundle;
 
@@ -10,18 +10,18 @@ use \yii\web\AssetBundle;
  */
 class ActiveAssets extends AssetBundle
 {
-	public $sourcePath = '@teliasorg/autocompleteAjax/assets';
+    public $sourcePath = '@nikser/autocompleteAjax/assets';
 
-	public $js = [
-		'js/jquery-ui-1.9.2.custom.min.js',
-	];
+    public $js = [
+        'js/jquery-ui-1.9.2.custom.min.js',
+    ];
 
-	public $depends = [
-		'yii\web\JqueryAsset'
-	];
+    public $depends = [
+        'yii\web\JqueryAsset'
+    ];
 
-	public $css = [
-		'css/jquery-ui-1.9.2.custom.min.css',
-		'css/yii2-autocomplete-ajax.css',
-	];
+    public $css = [
+        'css/jquery-ui-1.9.2.custom.min.css',
+        'css/yii2-autocomplete-ajax.css',
+    ];
 }
